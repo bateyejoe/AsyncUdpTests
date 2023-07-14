@@ -23,7 +23,7 @@ Interestingly, the more receive buffers I have greatly affect the number of time
 The epoll version of this test app can essentially saturate the 1Gbps link at a packet rate of 500,000 packets per second and cpu core usage of 72%. The io_uring implementation doesn’t really get past 200,000 packets per second for any reasonable number of receive buffers.
 
 The conclusion I draw from this is that, for an application like mine that requires a lot of outstanding I/O operations, the overhead of the internal ring management greatly exceeds any benefit gained by avoiding some system calls.
-![Screenshot CPU and Network Utilization during test runs](https://github.com/bateyejoe/AsynchUdpTests/images/io_uring_200000.png)
+![Screenshot CPU and Network Utilization during test runs](https://github.com/bateyejoe/AsynchUdpTests//blob/main/images/io_uring_200000.png)
 
 ###200 Pending Receives
 
@@ -79,7 +79,7 @@ The cancel operation, for a file descriptor, seems to be proportional to the num
 I did not see the long-term blocking of io_uring_wait_cqe_timeout() in this single-thread, single-ring implementation, even at higher data rates. I suspect this is related to some interaction between multiple rings on multiple threads/cores under load. 
 
 ##Epoll Result
-![Screenshot of CPU and Network Utilization for epoll test](https://github.com/bateyejoe/AsynchUdpTests/images/epoll_200000.png)
+![Screenshot of CPU and Network Utilization for epoll test](https://github.com/bateyejoe/AsynchUdpTests/blob/main/images/epoll_200000.png)
 Above is a run using epoll with the same 200,000 packets per second data rate.
 
 ##Test Setup

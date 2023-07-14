@@ -33,7 +33,7 @@ The conclusion I draw from this is that, for an application like mine that requi
 |----------------------------|-------------|----------------|------------------|-----------------|
 |io_uring_submit             |4.50182      |193503          |44.7525           |0.387            |
 |io_uring_wait_cqe_timeout   |4.32691      |241453          |43.0138           |1.123            |
-Submit that included the cancel the entire file descriptor tool 56.047ms.
+Submit that included the cancel of the entire file descriptor took 56.047ms.
 
 ### 1000 Pending Receives
 
@@ -45,7 +45,7 @@ Submit that included the cancel the entire file descriptor tool 56.047ms.
 |io_uring_submit             |3.33066      |38048           |32.7988           |13.893           |
 |io_uring_wait_cqe_timeout   |5.87482      |45588           |57.8524           |3.488            |
 
-Submit that included the cancel the entire file descriptor tool 95.619ms.
+Submit that included the cancel of the entire file descriptor took 95.619ms.
 
 ### 2000 Pending Receives
 
@@ -57,7 +57,7 @@ Submit that included the cancel the entire file descriptor tool 95.619ms.
 |io_uring_submit             |8.20975      |5256            |81.0151           |3.066            |
 |io_uring_wait_cqe_timeout   |0.089418     |5276            |0.882392          |3.474            |
 
-Submit that included the cancel the entire file descriptor tool 113.716ms.
+Submit that included the cancel the of entire file descriptor took 113.716ms.
 
 ### 4000 Pending Receives
 
@@ -69,7 +69,7 @@ Submit that included the cancel the entire file descriptor tool 113.716ms.
 |io_uring_submit             |11.2935      |3426            |89.945            |13.741           |
 |io_uring_wait_cqe_timeout   |0.210859     |3632            |1.67934           |11.454           |
 
-Submit that included the cancel the entire file descriptor tool 135.215ms.
+Submit that included the cancel of the entire file descriptor took 135.215ms.
 
 ## Notes:
 - The initial submit, and the submit that cancels all outstanding I/O for the file descriptor are not included in the Liburing Call stats above as they tended to be the largest.

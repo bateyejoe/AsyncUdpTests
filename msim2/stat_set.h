@@ -8,6 +8,7 @@
 #include <iostream>
 #include <chrono>
 #include <iomanip>
+#include <algorithm>
 
 using namespace std::chrono_literals;
 using Clock_t = std::chrono::steady_clock;

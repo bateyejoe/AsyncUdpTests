@@ -85,3 +85,47 @@ Above is a run using epoll with the same 200,000 packets per second data rate.
 ## Test Setup
 The tests were run on two systesm. The system running the msim2 test app was run on an Intel Core i7-9700K, 8-core CPU, 16GB RAM on Ubuntu 22.04 LTS with Kernal version 5.19.0-45-generic and the reflec application was run on an Intel Core i9-9900K 16 core CPU, 64GB RAM on Ubuntu 22.04.2 LTS with Kernal version 5.19.0-45-generic.
 Each test was run 10 times and the average results are shown in the tables. The screenshots are of a typical, single run.
+
+## Building
+```
+cmake -S AsyncUdpTests/ -B build-AsyncUdpTests
+cmake 00build build-AsyncUdpTests/
+```
+## Running the Tests
+### reflect
+I use a dedicated system for the reflector. Run the reflect command as follows:
+```
+./reflect <port> <buffers>
+```
+e.g.
+```
+./reflect 36000 8000
+```
+Starts the reflector on port 36000, using 8000 buffers.
+### msim2
+Usage:
+```
+msim2 command args
+  Commands
+    send_uring <dest_ip> [flags] <port> <packets_per_second> <duration_in_seconds> [<buffers> [<packet_size>]]
+    send_epoll <dest_ip> [flags] <port> <packets_per_second> <duration_in_seconds> [<packet_size>]
+  Flags                                                                         
+    --dump_submit_timing <filename>    - Applies only to send_uring. Creates a
+                                         csv file of all io_uring_submit()
+                                         call timings including batch size.
+    --dump_api_timing <filename>       - Creates a file containing a summary of
+                                         of the timing for API calls (liburing
+                                         or epoll/recvfrom/sendto).
+    --append_statistics <filename>     - If <filename> doesn't exist, it's
+                                         created and both a header line, and a
+                                         statistics line are written. If
+                                         <filename> already exists, the
+                                         statistics line is appended.
+    --ring_size <size>                 - Size passed to io_uring_queue_init().
+                                         defaults to 8000
+                                         only applies to send_uring
+```
+Example of a 20-second test sending to the reflector at 192.168.0.1:36000 using io_uring at a rate of 200,000 packets per second and 4000 receive buffers:
+```
+./msim2 send_uring 192.168.0.1 36000 200000 20 4000
+```

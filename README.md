@@ -11,7 +11,7 @@ Where I could manage about 8000 simultaneous streams with the epoll version of t
 
 With all the cores/rings/thread/file descriptors, it was difficult to narrow down what was going on. To simplify things, I created a new test application that uses a single file descriptor on a single thread on single io_uring ring and varied the packet rate (and also the number of outstanding receive operations). For comparison, I also created an epoll implementation of this test in the same application.
 
-##The New Test App
+## The New Test App
 My test app creates a single socket, on a single ring using a single thread and sends and receives small (172-byte UDP payload) UDP packets. In the test runs below, the sending and receiving rates are 200,000 packets per second. The only thing that varies in these four runs is the number of receive buffers (or maximum amount of ring receive operations in flight). Upon handling a receive completion, a new receive operation is posted meaning the app tries to keep all receive buffers posted to the ring at all times.
 
 In general, the io_uring implementation consumes far more CPU than the epoll implementation, but I also noticed that the CPU usage, for the same packet rate, generally goes up as the number of outstanding receive operations is increased.
@@ -25,7 +25,7 @@ The epoll version of this test app can essentially saturate the 1Gbps link at a 
 The conclusion I draw from this is that, for an application like mine that requires a lot of outstanding I/O operations, the overhead of the internal ring management greatly exceeds any benefit gained by avoiding some system calls.
 ![Screenshot CPU and Network Utilization during test runs](https://github.com/bateyejoe/AsyncUdpTests/blob/main/images/io_uring_200000.png)
 
-###200 Pending Receives
+### 200 Pending Receives
 
 /usr/bin/time stats:
 10.5% user, 100.4% system 110% cpu usage
@@ -35,7 +35,7 @@ The conclusion I draw from this is that, for an application like mine that requi
 |io_uring_wait_cqe_timeout   |4.32691      |241453          |43.0138           |1.123            |
 Submit that included the cancel the entire file descriptor tool 56.047ms.
 
-###1000 Pending Receives
+### 1000 Pending Receives
 
 /usr/bin/time stats:
 8.26% user, 73.4% system 81.7% cpu usage
@@ -47,7 +47,7 @@ Submit that included the cancel the entire file descriptor tool 56.047ms.
 
 Submit that included the cancel the entire file descriptor tool 95.619ms.
 
-###2000 Pending Receives
+### 2000 Pending Receives
 
 /usr/bin/time stats:
 8.38% user, 105.0% system 113.4% cpu usage
@@ -59,7 +59,7 @@ Submit that included the cancel the entire file descriptor tool 95.619ms.
 
 Submit that included the cancel the entire file descriptor tool 113.716ms.
 
-###4000 Pending Receives
+### 4000 Pending Receives
 
 /usr/bin/time stats:
 8.04% user, 102.5% system 110.6% cpu usage
@@ -71,17 +71,17 @@ Submit that included the cancel the entire file descriptor tool 113.716ms.
 
 Submit that included the cancel the entire file descriptor tool 135.215ms.
 
-##Notes:
-The initial submit, and the submit that cancels all outstanding I/O for the file descriptor are not included in the Liburing Call stats above as they tended to be the largest.
+## Notes:
+- The initial submit, and the submit that cancels all outstanding I/O for the file descriptor are not included in the Liburing Call stats above as they tended to be the largest.
 
-The cancel operation, for a file descriptor, seems to be proportional to the number of outstanding I/O operations and can get quite lengthy as noted above. For my real-world application, this isn’t a concern because each cancel would be only for a handful of I/O operations.
+- The cancel operation, for a file descriptor, seems to be proportional to the number of outstanding I/O operations and can get quite lengthy as noted above. For my real-world application, this isn’t a concern because each cancel would be only for a handful of I/O operations.
 
-I did not see the long-term blocking of io_uring_wait_cqe_timeout() in this single-thread, single-ring implementation, even at higher data rates. I suspect this is related to some interaction between multiple rings on multiple threads/cores under load. 
+- I did not see the long-term blocking of io_uring_wait_cqe_timeout() in this single-thread, single-ring implementation, even at higher data rates. I suspect this is related to some interaction between multiple rings on multiple threads/cores under load. 
 
-##Epoll Result
+## Epoll Result
 ![Screenshot of CPU and Network Utilization for epoll test](https://github.com/bateyejoe/AsyncUdpTests/blob/main/images/epoll_200000.png)
 Above is a run using epoll with the same 200,000 packets per second data rate.
 
-##Test Setup
+## Test Setup
 The tests were run on two systesm. The system running the msim2 test app was run on an Intel Core i7-9700K, 8-core CPU, 16GB RAM on Ubuntu 22.04 LTS with Kernal version 5.19.0-45-generic and the reflec application was run on an Intel Core i9-9900K 16 core CPU, 64GB RAM on Ubuntu 22.04.2 LTS with Kernal version 5.19.0-45-generic.
 Each test was run 10 times and the average results are shown in the tables. The screenshots are of a typical, single run.
